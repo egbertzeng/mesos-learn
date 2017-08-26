@@ -220,7 +220,6 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
     3.启动服务&开机启动
         systemctl start  mesos-master mesos-slave marathon chronos
         systemctl enable mesos-master mesos-slave marathon  chronos
-         
     4.验证启动，webui
         mesos界面：      http://10.100.134.3:5050
         marathon界面：   http://10.100.134.3:8080
@@ -244,33 +243,30 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
     1.配置所有mesos-slave
         echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
         echo '100000mins' > /etc/mesos-slave/executor_registration_timeout
-
-
-
-echo 'file:///etc/mesos-agent/resources.txt'>/etc/mesos-agent/resources
-
-systemctl stop mesos-slave
-systemctl start mesos-slave
-
-
     2.重启所有mesos-slave
         systemctl restart mesos-slave
-
-                systemctl restart mesos-master
-
-
-重要目录
-  /usr/etc/mesos
-  /var/log/mesos
+        systemctl restart mesos-master
 
 
-几个配置启动参数的目录： 
-/etc/mesos-master/ 
-/etc/mesos-slave/ 
-/etc/marathon/conf/ 
-在这些目录分别用来配置mesos-master，mesos-slave，marathon的启动参数。以参数名为文件名，参数值为文件内容即可。
+五、让定制mesos资源分配
+    echo 'file:///etc/mesos-agent/resources.txt'>/etc/mesos-agent/resources
+    如果要让配置生效，需要重启进程
+    systemctl stop mesos-slave
+    systemctl start mesos-slave
 
-服务将被连接到如下path
-/etc/systemd/system/multi-user.target.wants
+
+六、重要目录  
+    1.执行目录
+       /usr/etc/mesos
+    2.日志目录
+      /var/log/mesos
+    3.配置启动参数的目录： 
+        /etc/mesos-master/ 
+        /etc/mesos-slave/ 
+        /etc/marathon/conf/ 
+        在这些目录分别用来配置mesos-master，mesos-slave，marathon的启动参数。
+        以参数名为文件名，参数值为文件内容即可。
+    4.服务将被连接到如下path
+       /etc/systemd/system/multi-user.target.wants
 
 
