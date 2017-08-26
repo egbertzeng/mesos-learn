@@ -1,0 +1,1 @@
+docker build -t 10.100.134.3:5000/first-portal-docker .
