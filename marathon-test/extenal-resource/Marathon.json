@@ -1,10 +1,10 @@
 {
-    "id": "basic-1",
+    "id": "extenal-resource-1",
     "cmd": "`chmod u+x cool-script.sh && ./cool-script.sh`",
     "cpus": 0.1,
     "mem": 10.0,
     "instances": 1,
     "uris": [
-    "https://example.com/marathon-test/extenal-resource/cool-script.sh"
+    "https://github.com/liguohua-bigdata/mesos-learn/blob/master/marathon-test/extenal-resource/cool-script.sh"
 ]
 }

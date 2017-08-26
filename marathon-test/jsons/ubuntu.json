@@ -1,0 +1,14 @@
+{
+  "id": "ubuntu-marathon",
+  "instances": 2,
+  "cpus": 0.5,
+  "mem": 256,
+  "uris": [],
+  "cmd": "while sleep 1; do date -u +%T; done",
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "libmesos/ubuntu"
+    }
+  }
+}

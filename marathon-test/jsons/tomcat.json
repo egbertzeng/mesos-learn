@@ -1,0 +1,39 @@
+{
+  "id": "tomcat",
+  "cpus": 1,
+  "mem": 128,
+  "instances": 1,
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE",
+      ""
+    ]
+  ],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "tomcat",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 31001,
+          "servicePort": 31002,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "portIndex": 0,
+      "path": "/",
+      "gracePeriodSeconds": 5,
+      "intervalSeconds": 20,
+      "maxConsecutiveFailures": 3
+    }
+  ]
+}
+
