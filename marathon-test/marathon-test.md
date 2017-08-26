@@ -1,13 +1,13 @@
 
 #####################################################################################################################
-一、marathon测试案例1
+一、marathon最简单的hello world应用
 要求：
   部署一个打印语句,输出将在stdout的日志中查看
 方案：
 * [marathon-json-file](jsons/test001.json)
 
 #####################################################################################################################
-二、marathon测试案例2
+二、marathon部署http版的hello world应用
 要求：
   用nc命令启动一个HTTP服务
 1.在各节点上安装netcat
@@ -80,6 +80,23 @@ Marathon有自己的REST API，我们通过API的方式来创建一个Nginx的Do
     通过marathon提供的端口能访问index.html
  
 
+#####################################################################################################################
+九、marathon部署一个springboot应用
+1.要求：
+  成功部署一个springboot应用
+2.实现：
+    1.实现一个springboot的程序
+    2.将其打包成docker image 并上传到私有镜像
+    3.使用marathon成功部署
+3.参考：
+    bigdata-common中的basic-test-service应用
+4.测试：
+    访问：
+    http://bigdata04:31011/hi
+    返回：
+    hello marathon! this msg come from spring boot basic-test-service!
+    
+ 
 
 
 
@@ -89,49 +106,4 @@ Marathon有自己的REST API，我们通过API的方式来创建一个Nginx的Do
 
 
 
-
-
-
-
-
-
-####################################################################################################################################
-
-
-1.部署前端代码到marathon(随机端口映射)
-
-{
-    "id":"/telecomapistore/portal-service",
-    "cpus":0.6,
-    "mem":120.0,
-    "instances": 3,
-    "constraints": [["hostname","UNIQUE",""]],
-    "container": {
-        "type":"DOCKER",
-        "docker": {
-            "image": "10.100.134.3:5000/telecomapistore/portal-service",
-            "network": "BRIDGE",
-            "portMappings": [{ "containerPort": 80,"hostPort": 0,"servicePort": 0, "protocol":"tcp" }]
-          }
-    } 
-}
-
-2.部署前端代码到marathon(指定端口映射)
-
-{
-    "id":"/telecomapistore/portal-service",
-    "cpus":0.6,
-    "mem":600.0,
-    "instances": 3,
-    "constraints": [["hostname","UNIQUE",""]],
-    "container": {
-        "type":"DOCKER",
-        "docker": {
-            "image": "10.100.134.3:5000/telecomapistore/portal-service",
-            "network": "BRIDGE",
-            "forcePullImage": true,
-            "portMappings": [{"containerPort": 80, "hostPort": 31111,"servicePort": 0, "protocol": "tcp" }]  
-          }
-    } 
-}
 
