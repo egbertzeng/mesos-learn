@@ -1,0 +1,140 @@
+docker run -d -p 8761:8761 --name  eureka-service  77e83ed42653 
+
+docker run -d -p  8093:8093 --name configuration-service 1b267dff2085   
+
+
+
+
+
+
+docker build -t telecomapistore/eureka-service:1.0 .
+
+
+
+
+docker kill eureka-service
+docker rm   eureka-service
+
+docker pull 10.100.134.3:5000/telecomapistore/eureka-service
+
+
+docker kill eureka-service
+docker rm   eureka-service
+docker run -it -p 8761:8761 --net host --name eureka-service 10.100.134.3:5000/telecomapistore/eureka-service --ALL_SERVICE_RUN_HOST=bigdata05
+
+
+docker run -it -d --net host --name eureka-service 10.100.134.3:5000/telecomapistore/eureka-service --ALL_SERVICE_RUN_HOST=bigdata05
+
+docker logs -f -t eureka-service
+
+
+
+
+
+docker build -t telecomapistore/configuration-service:1.0 .
+
+docker kill configuration-service
+docker rm   configuration-service
+docker run -it --net host --name configuration-service 10.100.134.3:5000/telecomapistore/configuration-service --ALL_SERVICE_RUN_HOST=bigdata05
+
+docker logs -f -t configuration-service
+
+
+
+
+
+docker build -t telecomapistore/configuration-client .
+docker kill configuration-client
+docker rm   configuration-client
+
+docker run -it --net host --name configuration-client 10.100.134.3:5000/telecomapistore/configuration-client --ALL_SERVICE_RUN_HOST=bigdata05
+
+docker logs -f -t configuration-client
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker build -t telecomapistore/apistore-service:1.0 .
+docker kill apistore-service
+docker rm   apistore-service
+
+docker run -it -p 8085:8085 --net host  --name apistore-service telecomapistore/apistore-service:1.0 --ALL_SERVICE_RUN_HOST=localhost
+
+docker logs -f -t apistore-service
+
+
+
+
+docker build -t telecomapistore/auth-service:1.0 .
+docker kill auth-service
+docker rm   auth-service
+
+docker run -it -p 8085:8085 --net host --name auth-service telecomapistore/auth-service:1.0 --ALL_SERVICE_RUN_HOST=localhost
+
+docker logs -f -t auth-service
+
+
+
+
+
+docker build -t telecomapistore/gateway-service:1.0 .
+docker kill gateway-service
+docker rm   gateway-service
+
+docker run -it -p 8085:8085 --net host  --name gateway-service telecomapistore/gateway-service:1.0 
+--ALL_SERVICE_RUN_HOST=localhost
+
+docker logs -f -t gateway-service
+
+
+
+
+
+
+
+
+
+
+docker kill discoveryPrimary
+docker rm   discoveryPrimary
+
+docker kill configuration-service
+docker rm   configuration-service
+
+docker kill configuration-client
+docker rm   configuration-client
+
+docker kill apistore-service
+docker rm   apistore-service
+
+docker kill auth-service
+docker rm   auth-service
+
+docker kill gateway-service
+docker rm   gateway-service
+
+
+docker rmi $(docker images -f "dangling=true" -q)
+docker rm -v $(docker ps -a -q -f status=exited)
+
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+
+
+
+
+
+
+
+
+
