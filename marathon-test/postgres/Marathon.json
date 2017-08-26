@@ -1,0 +1,41 @@
+{
+  "id": "/postgres",
+  "cpus": 1,
+  "instances": 1,
+  "mem": 512,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "pgdata",
+        "mode": "RW",
+        "persistent": {
+          "size": 100
+        }
+      }
+    ],
+    "docker": {
+      "image": "postgres:latest",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 5432,
+          "hostPort": 0,
+          "protocol": "tcp",
+          "name": "postgres"
+        }
+      ]
+    }
+  },
+  "env": {
+    "POSTGRES_PASSWORD": "password",
+    "PGDATA": "/mnt/mesos/sandbox/pgdata"
+  },
+  "residency": {
+    "taskLostBehavior": "WAIT_FOREVER"
+  },
+  "upgradeStrategy": {
+    "maximumOverCapacity": 0,
+    "minimumHealthCapacity": 0
+  }
+}
