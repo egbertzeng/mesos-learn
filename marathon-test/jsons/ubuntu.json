@@ -4,7 +4,7 @@
   "cpus": 0.5,
   "mem": 256,
   "uris": [],
-  "cmd": "while sleep 1; do date -u +%T; done",
+  "cmd": "while true; do ( echo 'HTTP/1.0 200 Ok'; echo; echo date -u +%T 'Hello World From ubuntu!' ) | nc -l $PORT; done",
   "container": {
     "type": "DOCKER",
     "docker": {
