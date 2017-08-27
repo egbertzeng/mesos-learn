@@ -243,24 +243,63 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
     1.配置所有mesos-slave
         echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
         echo '100000mins' > /etc/mesos-slave/executor_registration_timeout
+        echo 'filesystem/linux,docker/runtime' | tee /etc/mesos-slave/isolation
     2.重启所有mesos-slave
         systemctl restart mesos-slave
         systemctl restart mesos-master
 
 
-五、让定制mesos资源分配
-    echo 'file:///etc/mesos-agent/resources.txt'>/etc/mesos-agent/resources
+五、让定制mesos资源分配（解决mesos默认[31000-32000]端口分配的限制）
+可以参考
+http://blog.csdn.net/zhao4471437/article/details/52910200
+1.防止冲突所有slave节点删除原来的meta数据
+    rm -rf /var/lib/mesos/meta
+2.编辑配置文件
+   vim /etc/mesos-slave-data/resources.conf
+   内容如下：
+   [
+     {
+       "name": "ports",
+       "type": "RANGES",
+       "ranges": {
+         "range": [
+           {
+             "begin": 21000,
+             "end": 24000
+           },
+           {
+             "begin": 30000,
+             "end": 64000
+           }
+         ]
+       }
+     }
+   ]
+
+   
+3.分发配置
+    scp /etc/mesos-slave-data/resources.conf bigdata04:/etc/mesos-slave-data/resources.conf
+   
+4.将配置文件应用到mesos-slave
+    echo 'file:///etc/mesos-slave-data/resources.conf'>/etc/mesos-slave/resources
+
+5.重启服务meoso-slave
     如果要让配置生效，需要重启进程
     systemctl stop mesos-slave
     systemctl start mesos-slave
+    或命令
+    systemctl restart mesos-slave
+
 
 
 六、重要目录  
-    1.执行目录
-       /usr/etc/mesos
-    2.日志目录
-      /var/log/mesos
-    3.配置启动参数的目录： 
+    1.环境变量目录
+        /usr/etc/mesos 
+    2.执行目录
+        /var/run/mesos
+    3.日志目录
+        /var/log/mesos
+    4.配置启动参数配置目录： 
         /etc/mesos-master/ 
         /etc/mesos-slave/ 
         /etc/marathon/conf/ 
