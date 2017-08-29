@@ -12,8 +12,8 @@
       "portMappings": [
         {
           "containerPort": 5000,
-          "hostPort": 31000,
-          "servicePort": 10009,
+          "hostPort": 5000,
+          "servicePort": 0,
           "protocol": "tcp",
           "name": "http",
           "labels": {}
@@ -22,7 +22,14 @@
       "privileged": false,
       "parameters": [],
       "forcePullImage": false
-    }
+    },
+    "volumes": [
+      {
+        "containerPath": "/tmp/registry ",
+        "hostPath": "/cloudstar/data/registry",
+        "mode": "RW"
+      }
+    ]
   },
   "healthChecks": [
     {
@@ -39,5 +46,12 @@
   "upgradeStrategy": {
     "minimumHealthCapacity": 0,
     "maximumOverCapacity": 0
-  }
+  },
+  "constraints": [
+    [
+      "hostname",
+      "CLUSTER",
+      "bigdata03"
+    ]
+  ]
 }

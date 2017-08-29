@@ -5,6 +5,13 @@
 0.关闭防火墙
     systemctl stop firewalld.service 
     systemctl disable firewalld.service 
+    或组合命令
+    systemctl stop firewalld && systemctl disable firewalld
+    
+    禁用ipv6
+    echo 1>/proc/sys/net/ipv6/conf/all/disable_ipv6
+    echo 1>/proc/sys/net/ipv6/conf/default/disable_ipv6
+    
 1.修改密码
     passwd root
     密码修改为12345678
@@ -19,7 +26,7 @@
     echo bigdata05 > /proc/sys/kernel/hostname
 
     不用重启机器就能看到修改的办法
-     hostnamectl --static set-hostname master
+     hostnamectl --static set-hostname bigdata05
 
 3.配置hosts文件
     vim /etc/hosts
@@ -251,6 +258,7 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
 
 五、让定制mesos资源分配（解决mesos默认[31000-32000]端口分配的限制）
 可以参考
+http://mesos.apache.org/documentation/attributes-resources/
 http://blog.csdn.net/zhao4471437/article/details/52910200
 1.防止冲突所有slave节点删除原来的meta数据
     rm -rf /var/lib/mesos/meta
@@ -279,6 +287,7 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
    
 3.分发配置
     scp /etc/mesos-slave-data/resources.conf bigdata04:/etc/mesos-slave-data/resources.conf
+    scp /etc/mesos-slave-data/resources.conf bigdata05:/etc/mesos-slave-data/resources.conf
    
 4.将配置文件应用到mesos-slave
     echo 'file:///etc/mesos-slave-data/resources.conf'>/etc/mesos-slave/resources
@@ -309,3 +318,51 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
        /etc/systemd/system/multi-user.target.wants
 
 
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+七、配置mesos-master和marathon的高可用
+http://heqin.blog.51cto.com/8931355/1712426
+1.配置主机名称   
+    bigdata03执行
+        echo 10.100.134.3 > /etc/mesos-master/hostname
+        mkdir -p /etc/marathon/conf
+        echo 10.100.134.3 > /etc/marathon/conf/hostname
+    bigdata04执行
+        echo 10.100.134.4 > /etc/mesos-master/hostname
+        mkdir -p /etc/marathon/conf
+        echo 10.100.134.4 > /etc/marathon/conf/hostname
+    bigdata05执行
+        echo 10.100.134.5 > /etc/mesos-master/hostname
+        mkdir -p /etc/marathon/conf
+        echo 10.100.134.5 > /etc/marathon/conf/hostname
+2.配置mesos集群的标识名称（所有机器上执行）
+    echo bigdata-mesos-cluster1 > /etc/mesos-master/cluster 
+3.配置marathon和mesos-master高可用的zookeeper信息
+    cp  /etc/mesos/zk   /etc/marathon/conf/master
+    cp  /etc/mesos/zk   /etc/marathon/conf/zk
+    sed -i  's|mesos|marathon|g'   /etc/marathon/conf/zk
+4.重启集群
+
+    systemctl stop  mesos-slave mesos-master marathon chronos
+    systemctl start mesos-slave mesos-master marathon chronos
+    
+    rm -rf /var/lib/mesos/meta
+    systemctl enable   mesos-slave mesos-master marathon chronos
+    systemctl restart  mesos-slave mesos-master marathon chronos
+      
+    systemctl restart docker
+    
+    
+    默认使用网卡
+    eth0
+    http://blog.csdn.net/fanhonooo/article/details/53494100
+    http://mesos.apache.org/documentation/latest/configuration/
+    
+    
+    
+    
+    mesos博客文章
+    https://mp.weixin.qq.com/s?__biz=MzA3MDg4Nzc2NQ==&mid=2652134190&idx=1&sn=a36f54ec6c0a30ed781f604628840584&mpshare=1&scene=23&srcid=0829czSyxQmvPxs1jQKweNTS#rd
