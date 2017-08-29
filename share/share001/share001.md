@@ -1,4 +1,4 @@
-<h3>1.mesosphere的DCOS卖相还不错</h3>
+<h3>1.mesosphere和DCOS的卖相概览</h3>
 
 ![](images/dashboard-ee-4-1200x690.gif)
 ![](images/jobs-ee-1200x688.gif)
@@ -17,6 +17,7 @@
 ![](images/yarn.png)
 ![](images/Snip20170829_18.png)
 ![](images/Snip20170829_16.png)
+![](images/Snip20170829_6.png)
 
 
 <h3>2.DCOS概念及架构</h3>
@@ -41,7 +42,6 @@
 
 
 
-
 ![](images/mesos-architecture.png)
 
 ![](images/dcos-architecture-layers-1.png)
@@ -49,4 +49,18 @@
 
 <h3>使用的公司</h3>
 
-![](images/Snip20170829_6.png)
+
+<h3>2.我们的使用情况</h3>
+![](images/Snip20170810_3.png)
+![](images/Snip20170820_1.png)
+![](images/Snip20170820_2.png)
+![](images/Snip20170820_3.png)
+![](images/Snip20170820_4.png)
+![](images/Snip20170820_5.png)
+![](images/Snip20170820_6.png)
+![](images/Snip20170820_7.png)
+![](images/Snip20170820_10.png)
+![](images/Snip20170827_1.png)
+![](images/Snip20170827_4.png)
+![](images/Snip20170827_5.png)
+
