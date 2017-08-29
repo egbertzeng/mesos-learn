@@ -16,11 +16,19 @@
 ![](images/ibm001.png)
 ![](images/yarn.png)
 ![](images/Snip20170829_18.png)
-![](images/Snip20170829_10.png)
+![](images/Snip20170829_16.png)
 
 
 <h3>2.DCOS概念及架构</h3>
 ![](images/Snip20170829_17.png)
+![](images/Snip20170829_20.png)
+![](images/Snip20170829_21.png)
+![](images/Snip20170829_13.png)
+![](images/Snip20170829_22.png)
+![](images/Snip20170829_11.png)
+![](images/Snip20170829_12.png)
+
+<h3>2.DCOS概念及架构</h3>
 ![](images/Snip20170829_10.png)
 
 
