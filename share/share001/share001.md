@@ -12,9 +12,17 @@
 ![](images/Snip20170829_3.png)
 ![](images/Snip20170829_4.png)
 ![](images/Snip20170829_5.png)
+![](images/Snip20170829_15.png)
+![](images/ibm001.png)
+![](images/yarn.png)
 
 
 <h3>2.DCOS概念及架构</h3>
 ![](images/mesos-architecture.png)
 
 ![](images/dcos-architecture-layers-1.png)
+
+
+<h3>使用的公司</h3>
+
+![](images/Snip20170829_6.png)
