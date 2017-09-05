@@ -2,6 +2,10 @@
 ####################################################################################################################################
 一、修改机器信息
 ####################################################################################################################################
+0.关闭selinux
+    sed -i '/SELINUX/s/enforcing/disabled/' /etc/selinux/config
+    setenforce 0
+
 0.关闭防火墙
     systemctl stop firewalld.service 
     systemctl disable firewalld.service 
@@ -12,6 +16,13 @@
     echo 1>/proc/sys/net/ipv6/conf/all/disable_ipv6
     echo 1>/proc/sys/net/ipv6/conf/default/disable_ipv6
     
+    设置电信dns
+        查看网络连接
+        nmcli connection show
+        设置网络连接
+        nmcli con mod eno16777736 ipv4.dns "114.114.114.114 8.8.8.8"
+        nmcli con up eno16777736
+        
 1.修改密码
     passwd root
     密码修改为12345678
@@ -23,19 +34,23 @@
     验证：hostname 
 
     此语句重启无效
+    echo bigdata03 > /proc/sys/kernel/hostname
+    echo bigdata04 > /proc/sys/kernel/hostname
     echo bigdata05 > /proc/sys/kernel/hostname
 
     不用重启机器就能看到修改的办法
+     hostnamectl --static set-hostname bigdata03
+     hostnamectl --static set-hostname bigdata04
      hostnamectl --static set-hostname bigdata05
 
 3.配置hosts文件
     vim /etc/hosts
     写入
-    10.100.134.1 gateway   
-    10.100.134.2 cluster   
-    10.100.134.3 bigdata03
-    10.100.134.4 bigdata04
-    10.100.134.5 bigdata05
+10.100.134.1 gateway   
+10.100.134.2 cluster   
+10.100.134.3 bigdata03
+10.100.134.4 bigdata04
+10.100.134.5 bigdata05
     分发配置文件
     scp /etc/hosts bigdata04:/etc/hosts
     scp /etc/hosts bigdata05:/etc/hosts
@@ -63,23 +78,30 @@
 /cloudstar/software
 下载jdk
     wget http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.tar.gz
+
 解压JDK
 	tar -zxvf jdk-8u144-linux-x64.tar.gz
+	
+创建软件目录
+	mkdir -p /cloudstar/software/
 分发JDK
+    
     scp -r jdk1.8.0_144 bigdata04:/cloudstar/software/
     scp -r jdk1.8.0_144 bigdata05:/cloudstar/software/
 
   配置环境变量
      vim ~/.bashrc 
      写入
-		export JAVA_HOME=/cloudstar/software/jdk1.8.0_144
-		PATH=${JAVA_HOME}/bin:$PAHT:
-     刷新环境变量
-     source ~/.bashrc 
+export JAVA_HOME=/cloudstar/software/jdk1.8.0_144
+export ZOOKEEPER_HOME=/cloudstar/software/zookeeper-3.4.10
+PATH=${JAVA_HOME}/bin:${ZOOKEEPER_HOME}/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PAHT:
 
     分发环境变量
         scp  ~/.bashrc   bigdata04:~/.bashrc 
         scp  ~/.bashrc   bigdata05:~/.bashrc 
+            
+    刷新环境变量
+    source ~/.bashrc 
 
 验证安装成功
         命令：java -version
@@ -138,9 +160,10 @@
     echo  5 > $ZOOKEEPER_HOME/data/myid
 zookeeper常用命令
     ${ZOOKEEPER_HOME}/bin/zkServer.sh start
+    ${ZOOKEEPER_HOME}/bin/zkServer.sh status
+
     ${ZOOKEEPER_HOME}/bin/zkServer.sh stop
     ${ZOOKEEPER_HOME}/bin/zkServer.sh restart
-    ${ZOOKEEPER_HOME}/bin/zkServer.sh status
 查看zookeeper日志
     more ${ZOOKEEPER_HOME}/bin/zookeeper.out
 
@@ -162,17 +185,88 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
         systemctl enable docker
     3.重置加速镜像
 		vim  /etc/docker/daemon.json
-			{"registry-mirrors": ["http://hub-mirror.c.163.com","https://docker.mirrors.ustc.edu.cn"]}
+{"registry-mirrors": ["http://hub-mirror.c.163.com","https://docker.mirrors.ustc.edu.cn"]}
+
+echo {"registry-mirrors": ["http://hub-mirror.c.163.com","https://docker.mirrors.ustc.edu.cn"]} >> /etc/docker/daemon.json
+
     4.重启docker服务
 		systemctl restart docker
     5.测试最小镜像
-        docker pull hello-world
         docker run hello-world
 
 
+如果要开启docker远程访问，可以参考如下链接
+http://blog.csdn.net/faryang/article/details/75949611
 ####################################################################################################################################
 五、docker私有仓库
 ####################################################################################################################################
+
+一、搭建docker私有仓库
+    1.安装并启动docker
+        yum -y install docker.io
+
+    2.下载registry镜像
+        docker pull registry
+
+    3.服务端使用http协议
+        vim /etc/sysconfig/docker
+        添加内容如下：
+other_args="--selinux-enabled --insecure-registry 10.100.134.2:5000"
+
+    4.docker常用命令
+        service docker restart
+        service docker start
+
+    5.启动registry镜像
+        docker run -d -p 5000:5000  --restart=always  -v /opt/registry:/tmp/registry  registry
+
+        参数说明：
+        -v /opt/registry:/tmp/registry :默认情况下，会将仓库存放于容器内的/tmp/registry目录下，指定本地目录挂载到容器
+        此容器要用 docker stop 进行停止
+    6.测试仓库运行地址
+        浏览地址： http://10.100.134.2:5000/v2/_catalog
+        效果示例： {"repositories":[]}
+
+二、测试私有仓库
+    1.本地使用http
+        在mac中通过docker-tools来设置如下参数
+        {
+            "insecure-registries": [
+                "10.100.134.2:5000"
+            ]
+        }
+    2.本地下载
+        docker pull busybox
+
+    3.本地tag
+        docker tag busybox 10.100.134.2:5000/busybox
+
+    4.本地查看image
+        docker images
+
+    5.上传到私有仓库
+        docker push 10.100.134.2:5000/busybox
+
+    6.验证上传成功
+        浏览地址： http://10.100.134.2:5000/v2/_catalog
+        效果样例： {"repositories":["busybox"]}
+
+三、可能出现的错误
+    1.错误提示
+        http: server gave HTTP response to HTTPS client
+    2.错误原因
+        docker repository默认使用https协议进行通信，一般情况下我们用http协议可以满足要求。
+        所以只要在server和client任何一方导致的协议不一致都会出现类似的问题。
+    3.解决方法
+        server端使用http协议
+        client端使用http协议
+
+
+
+
+
+
+
 
 测试私有仓库是否可用
     docker pull hello-world
@@ -185,13 +279,13 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
     1.修改配置文件
         vim /etc/docker/daemon.json
         填写如下内容
-        {
-            "registry-mirrors": ["http://hub-mirror.c.163.com","https://docker.mirrors.ustc.edu.cn","10.100.134.3:5000"],
-            "insecure-registries":["10.100.134.3:5000"]
-        }
+{
+    "registry-mirrors": ["http://hub-mirror.c.163.com","https://docker.mirrors.ustc.edu.cn","10.100.134.3:5000","10.100.134.2:5000"],
+    "insecure-registries":["10.100.134.3:5000","10.100.134.2:5000"]
+}
 
     2.分发配置文件
-        scp /etc/docker/daemon.json  bigdata04:/etc/docker/daemon.json
+        scp /etc/docker/daemon.json  bigdata03:/etc/docker/daemon.json
         scp /etc/docker/daemon.json  bigdata05:/etc/docker/daemon.json
     3.重启docker服务
         systemctl restart docker
@@ -222,11 +316,18 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
 		rpm -ivh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
 		yum -y install mesos marathon chronos
     2.配置zookeeper
-        vim /etc/mesos/zk
-        zk://bigdata03:2181,bigdata04:2181,bigdata05:2181/mesos
+        编辑命令
+         vim /etc/mesos/zk
+        编辑内容
+         zk://bigdata03:2181,bigdata04:2181,bigdata05:2181/mesos
     3.启动服务&开机启动
+
+
         systemctl start  mesos-master mesos-slave marathon chronos
-        systemctl enable mesos-master mesos-slave marathon  chronos
+        systemctl enable mesos-master mesos-slave marathon chronos
+        
+        systemctl stop    mesos-master mesos-slave marathon chronos
+        systemctl disable mesos-master mesos-slave marathon chronos
     4.验证启动，webui
         mesos界面：      http://10.100.134.3:5050
         marathon界面：   http://10.100.134.3:8080
@@ -248,13 +349,19 @@ http://blog.csdn.net/wangfei0904306/article/details/62046753
 
 四、让mesos支持docker技术
     1.配置所有mesos-slave
-        echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
-        echo '100000mins' > /etc/mesos-slave/executor_registration_timeout
-        echo 'filesystem/linux,docker/runtime' | tee /etc/mesos-slave/isolation
+echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
+echo 'docker' | tee /etc/mesos-slave/image_providers
+echo '10mins' > /etc/mesos-slave/executor_registration_timeout
+echo 'filesystem/linux,docker/runtime' | tee /etc/mesos-slave/isolation
+
     2.重启所有mesos-slave
         systemctl restart mesos-slave
         systemctl restart mesos-master
 
+  systemctl start mesos-slave
+rm -rf /etc/mesos-slave/containerizers
+rm -rf /etc/mesos-slave/executor_registration_timeout
+rm -rf /etc/mesos-slave/isolation
 
 五、让定制mesos资源分配（解决mesos默认[31000-32000]端口分配的限制）
 可以参考
@@ -263,26 +370,27 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
 1.防止冲突所有slave节点删除原来的meta数据
     rm -rf /var/lib/mesos/meta
 2.编辑配置文件
+   mkdir -p /etc/mesos-slave-data/
    vim /etc/mesos-slave-data/resources.conf
    内容如下：
-   [
-     {
-       "name": "ports",
-       "type": "RANGES",
-       "ranges": {
-         "range": [
-           {
-             "begin": 21000,
-             "end": 24000
-           },
-           {
-             "begin": 30000,
-             "end": 64000
-           }
-         ]
+[
+ {
+   "name": "ports",
+   "type": "RANGES",
+   "ranges": {
+     "range": [
+       {
+         "begin": 21000,
+         "end": 24000
+       },
+       {
+         "begin": 30000,
+         "end": 64000
        }
-     }
-   ]
+     ]
+   }
+ }
+]
 
    
 3.分发配置
@@ -291,6 +399,9 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
    
 4.将配置文件应用到mesos-slave
     echo 'file:///etc/mesos-slave-data/resources.conf'>/etc/mesos-slave/resources
+    
+    
+    rm -rf /etc/mesos-slave/resources
 
 5.重启服务meoso-slave
     如果要让配置生效，需要重启进程
@@ -298,6 +409,10 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
     systemctl start mesos-slave
     或命令
     systemctl restart mesos-slave
+    
+    
+    rm -rf /var/lib/mesos/meta
+    systemctl restart  mesos-master mesos-slave marathon chronos
 
 
 
@@ -318,9 +433,15 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
        /etc/systemd/system/multi-user.target.wants
 
 
-++++++++++++++++++++++++++++++++++++++++
-++++++++++++++++++++++++++++++++++++++++
-++++++++++++++++++++++++++++++++++++++++
+七、诊断命令
+    查看mesos-slave运行状态
+        journalctl -f -u  mesos-slave
+    
+    查看进程运行状态
+    systemctl status -l zookeeper
+    systemctl status -l mesos-master
+    systemctl status -l mesos-slave
+    systemctl status -l marathon
 ++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++
 七、配置mesos-master和marathon的高可用
@@ -345,17 +466,53 @@ http://heqin.blog.51cto.com/8931355/1712426
     cp  /etc/mesos/zk   /etc/marathon/conf/zk
     sed -i  's|mesos|marathon|g'   /etc/marathon/conf/zk
 4.重启集群
-
-    systemctl stop  mesos-slave mesos-master marathon chronos
-    systemctl start mesos-slave mesos-master marathon chronos
     
     rm -rf /var/lib/mesos/meta
-    systemctl enable   mesos-slave mesos-master marathon chronos
+    systemctl stop  mesos-slave mesos-master marathon chronos
+    systemctl start mesos-slave mesos-master marathon chronos
+    或者
+    rm -rf /var/lib/mesos/meta
     systemctl restart  mesos-slave mesos-master marathon chronos
-      
-    systemctl restart docker
-    
-    
+    systemctl enable   mesos-slave mesos-master marathon chronos
+
+ ++++++++++++++++++++++++++++++++++++++++
+ ++++++++++++++++++++++++++++++++++++++++ 
+ 
+ 九、配置marathon-lb
+ http://www.cnblogs.com/Bourbon-tian/p/7151840.html
+ http://www.cnblogs.com/hahp/p/5396302.html
+ https://baijiahao.baidu.com/s?id=1569673434470905&wfr=spider&for=pc
+ 1.下载镜像
+    docker pull mesosphere/marathon-lb
+ 2.编写marathon文件，在marathon上运行marathon-lb
+    * [marathon-lb.json](marathon-test/deploy/marathon-lb.json)
+ 
+ 3.部署httpd到marathon，并让marathon-lb负载
+     * [docker_httpd.json](marathon-test/deploy/docker_httpd.json)
+
+ 4.部署Nginx，并让marathon-lb负载
+     * [docker_nginx.json](marathon-test/deploy/docker_nginx.json)
+
+ 5.部署前端项目，并让marathon-lb负载
+   参加项目的Marathon.json
+   主要注意点为
+
+   ```
+    1.Marathon.json中的labels配置
+    "labels": {
+      "HAPROXY_GROUP": "external",
+      "HAPROXY_0_VHOST": "httpd.marathon.mesos"
+    },
+       
+    2.servicePort被负载到MLB节点上
+      原来的entrypoint=appHostIp+appHostPort
+      负载后entrypoint=MLBHostIp+appServicePort
+   ```
+   
+   ++++++++++++++++++++++++++++++++++++++++
+   ++++++++++++++++++++++++++++++++++++++++
+   ++++++++++++++++++++++++++++++++++++++++  
+     
     默认使用网卡
     eth0
     http://blog.csdn.net/fanhonooo/article/details/53494100
@@ -366,3 +523,14 @@ http://heqin.blog.51cto.com/8931355/1712426
     
     mesos博客文章
     https://mp.weixin.qq.com/s?__biz=MzA3MDg4Nzc2NQ==&mid=2652134190&idx=1&sn=a36f54ec6c0a30ed781f604628840584&mpshare=1&scene=23&srcid=0829czSyxQmvPxs1jQKweNTS#rd
+    
+    
+    部署inflexdb等
+    http://www.jianshu.com/p/d078d353d12f
+    
+    
+    
+    
+    测试chronos
+    http://www.cnblogs.com/ee900222/p/docker_2.html
+    * [chronos-test.json](chronos/chronos-test.json)

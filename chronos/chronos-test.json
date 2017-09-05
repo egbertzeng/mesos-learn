@@ -1,0 +1,13 @@
+{
+  "container": {
+    "type": "DOCKER",
+    "image": "nginx",
+    "network": "BRIDGE"
+  },
+  "schedule": "R\/2017-09-04T07:30:00Z\/PT2M",
+  "name": "test-chronos-nginx",
+  "cpus": "0.5",
+  "mem": "60",
+  "uris": [],
+  "command": "/usr/sbin/nginx -g 'daemon off;' -c /etc/nginx/nginx.conf"
+}
