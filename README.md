@@ -27,4 +27,4 @@ http://mesosphere.github.io/marathon/
 
 <h3>七、分享系列</h3>
 
-* [部署nodejs](share/share001/share001.md)
+* [MesosShare001](share/share001/share001.md)

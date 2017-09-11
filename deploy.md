@@ -37,6 +37,7 @@
     echo bigdata03 > /proc/sys/kernel/hostname
     echo bigdata04 > /proc/sys/kernel/hostname
     echo bigdata05 > /proc/sys/kernel/hostname
+ 
 
     不用重启机器就能看到修改的办法
      hostnamectl --static set-hostname bigdata03
@@ -51,9 +52,11 @@
 10.100.134.3 bigdata03
 10.100.134.4 bigdata04
 10.100.134.5 bigdata05
+10.100.134.6 bigdata06
     分发配置文件
     scp /etc/hosts bigdata04:/etc/hosts
     scp /etc/hosts bigdata05:/etc/hosts
+    scp /etc/hosts bigdata06:/etc/hosts
 
 
 4.配置集群免密登陆
@@ -68,6 +71,7 @@
     分发到其他机器
     scp /root/.ssh/authorized_keys bigdata04:/root/.ssh/
     scp /root/.ssh/authorized_keys bigdata05:/root/.ssh/
+    scp /root/.ssh/authorized_keys bigdata06:/root/.ssh/
 
 
 ####################################################################################################################################
@@ -321,8 +325,7 @@ other_args="--selinux-enabled --insecure-registry 10.100.134.2:5000"
         编辑内容
          zk://bigdata03:2181,bigdata04:2181,bigdata05:2181/mesos
     3.启动服务&开机启动
-
-
+    
         systemctl start  mesos-master mesos-slave marathon chronos
         systemctl enable mesos-master mesos-slave marathon chronos
         
@@ -331,7 +334,7 @@ other_args="--selinux-enabled --insecure-registry 10.100.134.2:5000"
     4.验证启动，webui
         mesos界面：      http://10.100.134.3:5050
         marathon界面：   http://10.100.134.3:8080
-        marathon界面：   http://10.100.134.3:4400
+        chronos界面：   http://10.100.134.3:4400
 二、安装mesos-slave
     1.安装mesosphere
         rpm -ivh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
@@ -349,19 +352,23 @@ other_args="--selinux-enabled --insecure-registry 10.100.134.2:5000"
 
 四、让mesos支持docker技术
     1.配置所有mesos-slave
-echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
-echo 'docker' | tee /etc/mesos-slave/image_providers
-echo '10mins' > /etc/mesos-slave/executor_registration_timeout
-echo 'filesystem/linux,docker/runtime' | tee /etc/mesos-slave/isolation
+        echo 'docker,mesos' | tee /etc/mesos-slave/containerizers
+        echo 'docker' | tee /etc/mesos-slave/image_providers
+        echo '10mins' > /etc/mesos-slave/executor_registration_timeout
+        echo 'filesystem/linux,docker/runtime,cgroups/cpu,cgroups/mem' | tee /etc/mesos-slave/isolation
+        echo '/var/run/docker.sock' | tee /etc/mesos-slave/docker_socket
+       
+        echo 'system.slice/mesos-slave.service' > /etc/mesos-slave/cgroups_root
+        echo '/sys/fs/cgroup' > /etc/mesos-slave/cgroups_hierarchy
 
     2.重启所有mesos-slave
         systemctl restart mesos-slave
         systemctl restart mesos-master
 
-  systemctl start mesos-slave
-rm -rf /etc/mesos-slave/containerizers
-rm -rf /etc/mesos-slave/executor_registration_timeout
-rm -rf /etc/mesos-slave/isolation
+        systemctl start mesos-slave
+        rm -rf /etc/mesos-slave/containerizers
+        rm -rf /etc/mesos-slave/executor_registration_timeout
+        rm -rf /etc/mesos-slave/isolation
 
 五、让定制mesos资源分配（解决mesos默认[31000-32000]端口分配的限制）
 可以参考
@@ -448,17 +455,25 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
 http://heqin.blog.51cto.com/8931355/1712426
 1.配置主机名称   
     bigdata03执行
+        echo 2 > /etc/mesos-master/quorum
         echo 10.100.134.3 > /etc/mesos-master/hostname
+        echo 10.100.134.3 > /etc/mesos-master/ip
         mkdir -p /etc/marathon/conf
         echo 10.100.134.3 > /etc/marathon/conf/hostname
     bigdata04执行
+        echo 2 > /etc/mesos-master/quorum
         echo 10.100.134.4 > /etc/mesos-master/hostname
+        echo 10.100.134.4 > /etc/mesos-master/ip
         mkdir -p /etc/marathon/conf
         echo 10.100.134.4 > /etc/marathon/conf/hostname
     bigdata05执行
+        echo 2 > /etc/mesos-master/quorum
         echo 10.100.134.5 > /etc/mesos-master/hostname
+        echo 10.100.134.5 > /etc/mesos-master/ip
         mkdir -p /etc/marathon/conf
         echo 10.100.134.5 > /etc/marathon/conf/hostname
+        
+     
 2.配置mesos集群的标识名称（所有机器上执行）
     echo bigdata-mesos-cluster1 > /etc/mesos-master/cluster 
 3.配置marathon和mesos-master高可用的zookeeper信息
@@ -479,6 +494,7 @@ http://heqin.blog.51cto.com/8931355/1712426
  ++++++++++++++++++++++++++++++++++++++++ 
  
  九、配置marathon-lb
+ https://github.com/mesosphere/marathon-lb
  http://www.cnblogs.com/Bourbon-tian/p/7151840.html
  http://www.cnblogs.com/hahp/p/5396302.html
  https://baijiahao.baidu.com/s?id=1569673434470905&wfr=spider&for=pc
