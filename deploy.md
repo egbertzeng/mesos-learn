@@ -451,7 +451,7 @@ http://blog.csdn.net/zhao4471437/article/details/52910200
     systemctl status -l marathon
 ++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++
-七、配置mesos-master和marathon的高可用
+八、配置mesos-master和marathon的高可用
 http://heqin.blog.51cto.com/8931355/1712426
 1.配置主机名称   
     bigdata03执行
@@ -472,7 +472,7 @@ http://heqin.blog.51cto.com/8931355/1712426
         echo 10.100.134.5 > /etc/mesos-master/ip
         mkdir -p /etc/marathon/conf
         echo 10.100.134.5 > /etc/marathon/conf/hostname
-        
+
      
 2.配置mesos集群的标识名称（所有机器上执行）
     echo bigdata-mesos-cluster1 > /etc/mesos-master/cluster 
@@ -489,7 +489,24 @@ http://heqin.blog.51cto.com/8931355/1712426
     rm -rf /var/lib/mesos/meta
     systemctl restart  mesos-slave mesos-master marathon chronos
     systemctl enable   mesos-slave mesos-master marathon chronos
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+九、修改marathon的默认端口     
+Marathon WebUI默认的端口是8080，修改端口的方法：
+1.编辑配置文件
+    编辑命令
+        vim /etc/default/marathon
+    添加内容
+        export HTTP_PORT=8081
+        export MARATHON_HTTP_PORT=8081
+2.分发配置文件
+    scp /etc/default/marathon bigdata04:/etc/default/marathon
+    scp /etc/default/marathon bigdata05:/etc/default/marathon
 
+3.重启marathon
+    systemctl stop marathon 
+    systemctl start marathon 
+    systemctl status marathon   
  ++++++++++++++++++++++++++++++++++++++++
  ++++++++++++++++++++++++++++++++++++++++ 
  
@@ -529,6 +546,10 @@ http://heqin.blog.51cto.com/8931355/1712426
    ++++++++++++++++++++++++++++++++++++++++
    ++++++++++++++++++++++++++++++++++++++++  
      
+     
+
+     
+     
     默认使用网卡
     eth0
     http://blog.csdn.net/fanhonooo/article/details/53494100
@@ -550,3 +571,27 @@ http://heqin.blog.51cto.com/8931355/1712426
     测试chronos
     http://www.cnblogs.com/ee900222/p/docker_2.html
     * [chronos-test.json](chronos/chronos-test.json)
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++  
+ 
+ 
+
+echo 8081 > /etc/marathon/conf/port
+systemctl restart marathon 
+systemctl status marathon 
+ 
+ 
+ 
+rm -rf /etc/marathon/conf/port
+systemctl restart marathon 
+systemctl status marathon 
+
+
+rm -rf /etc/sysconfig/marathon
+mkdir -p /etc/sysconfig/marathon/
+echo port=8081 > /etc/sysconfig/marathon
