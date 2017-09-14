@@ -1,22 +1,17 @@
 <h2>一、DO/OS和mesosphere</h2>
 <h3>1.mesosphere和DCOS概览</h3>
-    <img src="./images/dashboard-ee-4-1200x690.gif"/>
-    
-    ```
-      有对集群资源进行监控的统一界面
-    ```
-    
+    <img src="./images/dashboard-ee-4-1200x690.gif"/>  
+    <p>
+         有对集群资源进行监控的统一界面
+    </p>
     <img src="./images/jobs-ee-1200x688.gif"/>
-       
-    ```
-      可以自主的在mesos上创建自己的job
-    ```
-    
+    <p>
+        可以自主的在mesos上创建自己的job
+    </p>
     <img src="./images/tweeter-services6-ee-1-1200x687.gif"/>
-    
-     ```
+    <p>
       可以管理再DCOS上正在运行的service，诸如kafka,cassandra,zepplin等
-     ```
+    </p>    
     
     <img src="./images/tweeter-services8-ee-1-1200x688.gif"/>
     
