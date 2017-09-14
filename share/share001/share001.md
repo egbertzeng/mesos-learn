@@ -1,12 +1,23 @@
 <h2>一、DO/OS和mesosphere</h2>
 <h3>1.mesosphere和DCOS的卖相概览</h3>
-![](images/dashboard-ee-4-1200x690.gif)
-![](images/jobs-ee-1200x688.gif)
-![](images/tweeter-services6-ee-1-1200x687.gif)
-![](images/tweeter-services8-ee-1-1200x688.gif)
-![](images/ui-system-health-ee-1-1200x750.gif)
-![](images/ui-universe-ee-2-1200x688.gif)
+<img src="./images/dashboard-ee-4-1200x690.gif"/>
+
+
+<img src="./images/dashboard-ee-4-1200x690.gif"/>
+<img src="./images/jobs-ee-1200x688.gif"/>
+<img src="./images/tweeter-services6-ee-1-1200x687.gif"/>
+
+
+<img src="./images/tweeter-services8-ee-1-1200x688.gif"/>
+<img src="./images/ui-system-health-ee-1-1200x750.gif"/>
+<img src="./images/ui-universe-ee-2-1200x688.gif"/>
+
+
+
 <h3>2.DCOS概念和生态还不错</h3>
+<img src="./images/tweeter-services8-ee-1-1200x688.gif"/>
+<img src="./images/tweeter-services8-ee-1-1200x688.gif"/>
+
 ![](images/Snip20170829_1.png)
 ![](images/Snip20170829_2.png)
 ![](images/Snip20170829_3.png)

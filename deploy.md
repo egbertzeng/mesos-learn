@@ -358,6 +358,9 @@ other_args="--selinux-enabled --insecure-registry 10.100.134.2:5000"
         echo 'filesystem/linux,docker/runtime,cgroups/cpu,cgroups/mem' | tee /etc/mesos-slave/isolation
         echo '/var/run/docker.sock' | tee /etc/mesos-slave/docker_socket
        
+       echo 'docker' | tee /etc/mesos-slave/containerizers
+       
+       
         echo 'system.slice/mesos-slave.service' > /etc/mesos-slave/cgroups_root
         echo '/sys/fs/cgroup' > /etc/mesos-slave/cgroups_hierarchy
 
@@ -579,19 +582,3 @@ Marathon WebUI默认的端口是8080，修改端口的方法：
 ++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++  
  
- 
-
-echo 8081 > /etc/marathon/conf/port
-systemctl restart marathon 
-systemctl status marathon 
- 
- 
- 
-rm -rf /etc/marathon/conf/port
-systemctl restart marathon 
-systemctl status marathon 
-
-
-rm -rf /etc/sysconfig/marathon
-mkdir -p /etc/sysconfig/marathon/
-echo port=8081 > /etc/sysconfig/marathon
