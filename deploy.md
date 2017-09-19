@@ -492,6 +492,7 @@ http://heqin.blog.51cto.com/8931355/1712426
     rm -rf /var/lib/mesos/meta
     systemctl restart  mesos-slave mesos-master marathon chronos
     systemctl enable   mesos-slave mesos-master marathon chronos
+
 ++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++
 九、修改marathon的默认端口     

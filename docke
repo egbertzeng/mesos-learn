@@ -20,7 +20,7 @@ docker pull 10.100.134.3:5000/telecomapistore/eureka-service
 
 docker kill eureka-service
 docker rm   eureka-service
-docker run -it -p 8761:8761 --net host --name eureka-service 10.100.134.3:5000/telecomapistore/eureka-service --ALL_SERVICE_RUN_HOST=bigdata05
+docker run -it -p 8761:8761 --net host --name eureka-service 10.100.134.2:5000/telecomapistore/eureka-service --ALL_SERVICE_RUN_HOST=bigdata04
 
 
 docker run -it -d --net host --name eureka-service 10.100.134.3:5000/telecomapistore/eureka-service --ALL_SERVICE_RUN_HOST=bigdata05

@@ -4,7 +4,8 @@
   "constraints": [
     [
       "hostname",
-      "UNIQUE"
+      "CLUSTER",
+      "bigdata06"
     ]
   ],
   "container": {
@@ -18,13 +19,8 @@
   "args": [
     "sse",
     "-m",
-    "http://10.100.134.3:8080",
-    "-m",
-    "http://10.100.134.4:8080",
-    "-m",
-    "http://10.100.134.5:8080",
+    "http://10.100.134.6:8080",
     "--group",
     "external"
   ]
-
 }
