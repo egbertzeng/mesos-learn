@@ -14,89 +14,72 @@
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
     option = {
-        title: {
+        title : {
             text: '云星数据--大数据团队',
             subtext: 'CSDN博客发布量和阅读量'
         },
-        tooltip: {
+        tooltip : {
             trigger: 'axis'
         },
         legend: {
-            data: ['累积发布量', '累积阅读量', '日阅读量']
+            data:['发布量','阅读量']
         },
         toolbox: {
-            show: true,
-            feature: {
-                dataView: {show: true, readOnly: false},
-                magicType: {show: true, type: ['line', 'bar']},
-                restore: {show: true},
-                saveAsImage: {show: true}
+            show : true,
+            feature : {
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
             }
         },
-        calculable: true,
-        xAxis: [
+        calculable : true,
+        xAxis : [
             {
-                type: 'category',
-                data: ['11.08', '11.09', '11.10', '[11.11]', '[11.12]', '11.13', '11.14', '11.15', '11.16',]
+                type : 'category',
+                data : ['11.08','11.09','11.10','[11.11]','[11.12]','11.13','11.14','11.15','11.16',]
             }
         ],
-        yAxis: [
+        yAxis : [
             {
-                type: 'value'
+                type : 'value'
             }
         ],
-        series: [
+        series : [
             {
-                name: '累积发布量',
-                type: 'bar',
-                data: [5, 12, 22, 29, 39, null, 48, null, null,],
-                itemStyle: {normal: {label: {show: true}}},
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值'},
-                        {type: 'min', name: '最小值'}
+                name:'发布量',
+                type:'bar',
+                data:[5, 12, 22, 29,39,null,null,null,null,],
+                itemStyle : { normal: {label : {show: true}}},
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
                     ]
                 },
-                markLine: {
-                    data: [
-                        {type: 'average', name: '平均值'}
+                markLine : {
+                    data : [
+                        {type : 'average', name: '平均值'}
                     ]
                 }
             },
             {
-                name: '累积阅读量',
-                type: 'bar',
-                data: [22, 86, 237, 829, 1377, null, 2497, null, null,],
-                itemStyle: {normal: {label: {show: true}}},
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值'},
-                        {type: 'min', name: '最小值'}
+                name:'阅读量',
+                type:'bar',
+                data:[22, 86, 237, 829,1334,null,null,null,null,],
+                itemStyle : { normal: {label : {show: true}}},
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
                     ]
                 },
-                markLine: {
-                    data: [
-                        {type: 'average', name: '平均值'}
+                markLine : {
+                    data : [
+                        {type : 'average', name : '平均值'}
                     ]
                 }
-            },
-//            {
-//                name: '日阅读量',
-//                type: 'bar',
-//                data: [22, 64, 157, 592, 548, null, null, null, null,],
-//                itemStyle: {normal: {label: {show: true}}},
-//                markPoint: {
-//                    data: [
-//                        {type: 'max', name: '最大值'},
-//                        {type: 'min', name: '最小值'}
-//                    ]
-//                },
-//                markLine: {
-//                    data: [
-//                        {type: 'average', name: '平均值'}
-//                    ]
-//                }
-//            },
+            }
         ]
     };
 
