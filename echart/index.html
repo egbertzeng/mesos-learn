@@ -9,7 +9,7 @@
 </head>
 <body>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" style="width: 1100px;height:600px;"></div>
+<div id="main" style="width: 1300px;height:600px;"></div>
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
@@ -37,7 +37,7 @@
         xAxis : [
             {
                 type : 'category',
-                data : ['11.08','11.09','11.10','[11.11]','[11.12]','11.13','11.14','11.15','11.16','11.17','11.18','11.19','11.20',]
+                data : ['11.08','11.09','11.10','[11.11]','[11.12]','11.13','11.14','11.15','11.16','11.17','11.18','11.19','11.20',,'11.21',,'11.22',,'11.23',,'11.24',,'11.25',,'11.26',,'11.27',,'11.28',,'11.29',,'11.30',]
             }
         ],
         yAxis : [
@@ -49,7 +49,7 @@
             {
                 name:'发布量',
                 type:'bar',
-                data:[5, 12, 22, 29,39,42,48,56,68,null,null,null,null,],
+                data:[5, 12, 22, 29,39,42,48,56,68,76,null,null,null,null,null,null,null,null,null,null,null,null,null,],
                 itemStyle : { normal: {label : {show: true}}},
                 markPoint : {
                     data : [
@@ -66,7 +66,7 @@
             {
                 name:'阅读量',
                 type:'bar',
-                data:[22, 86, 237, 829,1334,1756,2497,3112,3712,null,null,null,null,],
+                data:[22, 86, 237, 829,1334,1756,2497,3112,3712,4536,null,null,null,null,null,null,null,null,null,null,null,null,null,],
                 itemStyle : { normal: {label : {show: true}}},
                 markPoint : {
                     data : [
